@@ -26,3 +26,10 @@ else:
 
 # Append instruction to message
 messages.append(learn_instruction)
+
+# Get last messages
+try:
+    with opeb(file_name) as user_file:
+        data = json.load(user_file)
+except Exception as e:
+    pass
