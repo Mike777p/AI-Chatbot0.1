@@ -8,7 +8,7 @@ def get_recent_messages():
 
     learn_instruction = {
         "role":"system",
-        "content":"You are an extremly intelligent life coach who knows everything. If you need more information to answer a question accurately; you will formulate questions to ask the user. The user is called Mike and your purpose is to help him succeed and answer any question he has as accurately as possible."
+        "content":"You are an extremely intelligent life coach who knows everything. If you need more information to answer a question accurately; you will formulate questions to ask the user. The user will most likely be Michael or one of his family and your purpose is to help them succeed and answer any question they have as accurately as possible."
     }
 
     # initilize  messages variable
@@ -18,11 +18,11 @@ def get_recent_messages():
     x = random.uniform(1,10)
 
     if x < 5:
-        learn_instruction["content"] += " Your response will contain some light flirting"
+        learn_instruction["content"] += " Your response will replicate someone who is flirting"
     elif x < 9:
-        learn_instruction["content"] += " Your response will contain some humour"
+        learn_instruction["content"] += " Your response will include some dry humour"
     else:
-        learn_instruction["content"] += " Your response will contain a little moodiness" 
+        learn_instruction["content"] += " Your response will include a little moodiness" 
 
 
     # Append instruction to message
@@ -47,3 +47,27 @@ def get_recent_messages():
 
     # return messages
     return messages
+
+#Store messages
+def store_messages(request_message, response_message):
+
+    #Acting as my db
+    file_name = "stored_data.json"
+
+    # Get the messages
+    messages = get_recent_messages()[1:]
+
+    # Add messages to data
+    user_message = {"role" : "user", "content" : request_message}
+    assistant_message = {"role" : "assistant", "content" : response_message}
+    messages.append(user_message)
+    messages.append(response_message)
+
+    with open(file_name, "w") as file:
+        json.dump(messages, file)
+
+    #reset messages
+def reset_messages():
+
+    # Overwrite file with nothing 
+    open("stored_data.json", "w")

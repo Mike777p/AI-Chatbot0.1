@@ -10,7 +10,9 @@ from decouple import config
 import openapi
 
 # Custom function imports 
-from functions.openai_request import convert_audio_to_text
+from functions.openai_request import convert_audio_to_text, get_chat_response
+from functions.db import store_messages, reset_messages
+from functions.text_to_speech import convert_text_to_speech
 
 #initiate appp 
 app = FastAPI()
@@ -38,6 +40,12 @@ app.add_middleware(
 async def check_health():
     return {"message": "Healthy"}
 
+# Reset messages EP
+@app.get("/reset_messages")
+async def reset_conversation():
+    reset_messages()
+    return {"message": "Conversation reset"}
+
 @app.get("/post-audio-get/")
 async def get_audio():
     
@@ -47,11 +55,24 @@ async def get_audio():
     # Decode audio
     message_decoded = convert_audio_to_text(audio_input)
 
-    print(message_decoded)
+    # Error handle for decoding
+    if not message_decoded:
+        return HTTPException(status_code=400, detail="Failed to decode audio")
+    
+    # Get chat reponse
+    chat_response = get_chat_response(message_decoded)
+
+        # Error handle for chat response
+    if not chat_response:
+        return HTTPException(status_code=400, detail="Failed to get chat response")
+
+    store_messages(message_decoded, chat_response)
+
+    # Convert audio
+    audio_output = convert_audio_to_text(chat_response)
+
+            # Error handle for audio output
+    if not audio_output:
+        return HTTPException(status_code=400, detail="Failed to get audio output from Elleven labs")
 
     return "Done"
-# Post bot  response
-#Note: Not playing in browser when using post request
-# @app.post("/post-audio/")
-# async def post_audio(file: UploadFile = File(...)):
-#     print("hello")
