@@ -8,26 +8,28 @@ ELEVEN_LABS_API_KEY = config("ELEVEN_LABS_API_KEY")
 def convert_text_to_speech(message):
 
     # Define data
-    body = {
-        "text": message,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {
-            "stability": 0,
-            "similarity_boost": 0,
-        }
+    data = {
+    "text": message,
+    "model_id": "eleven_monolingual_v1",
+    "voice_settings": {
+        "stability": 1,
+        "similarity_boost": 1
+    }
     }
 
     # define voice
     voice_rachel = "21m00Tcm4TlvDq8ikWAM"
 
     #Contruct headers and endpoint
-    headers = {"xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept" : "audio/mpeg"}
-    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_rachel}"
+    headers = {"Accept": "audio/mpeg", "Content-Type": "application/json", "xi-api-key": ELEVEN_LABS_API_KEY
+}
+    # headers = {"xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "Accept" : "audio/mpeg"}
+    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_rachel}/stream"
 
     # Send request
 
     try:
-        response = requests.post(endpoint, json=body, headers=headers)
+        response = requests.post(endpoint, json=data, headers=headers, stream=True)
     except Exception as e:
         print(e)
         return
@@ -35,5 +37,7 @@ def convert_text_to_speech(message):
     #Handle response
     if response.status_code == 200:
         return response.content
+        print("200")
     else:
+        print("Fail")
         return

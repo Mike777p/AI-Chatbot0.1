@@ -61,7 +61,7 @@ def store_messages(request_message, response_message):
     user_message = {"role" : "user", "content" : request_message}
     assistant_message = {"role" : "assistant", "content" : response_message}
     messages.append(user_message)
-    messages.append(response_message)
+    messages.append(assistant_message)
 
     with open(file_name, "w") as file:
         json.dump(messages, file)

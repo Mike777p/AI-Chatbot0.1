@@ -46,11 +46,17 @@ async def reset_conversation():
     reset_messages()
     return {"message": "Conversation reset"}
 
-@app.get("/post-audio-get/")
-async def get_audio():
+@app.get("/post-audio/")
+async def post_audio(file: UploadFile = File(...)):
+
     
-    # Get saved audio
-    audio_input = open("voice.mp3", "rb")
+    # # Get saved audio
+    # audio_input = open("voice.mp3", "rb")
+
+    #Save file from FE
+    with open(file.filename, "wb") as buffer:
+        buffer.write(file.file.read())
+    audio_input = open(file.filename, "rb")
 
     # Decode audio
     message_decoded = convert_audio_to_text(audio_input)
@@ -68,11 +74,19 @@ async def get_audio():
 
     store_messages(message_decoded, chat_response)
 
-    # Convert audio
-    audio_output = convert_audio_to_text(chat_response)
+    # Convert text to audio
+    audio_output = convert_text_to_speech(chat_response)
 
             # Error handle for audio output
     if not audio_output:
         return HTTPException(status_code=400, detail="Failed to get audio output from Elleven labs")
+    
+    
+    # Create a generator that yeilds chunks of the data
+    def iterfile():
+        yield audio_output
+
+    return StreamingResponse(iterfile(), media_type="application/octet-stream")
+
 
     return "Done"
