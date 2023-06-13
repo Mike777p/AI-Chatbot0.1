@@ -2,7 +2,7 @@ import openai
 from decouple import config
 
 #Custom funcs
-from functions.db import get_recent_messages
+from backend.functions.database import get_recent_messages
 
 # Retrieve variables
 openai.api_key = config("OPEN_AI_KEY")
@@ -35,9 +35,8 @@ def get_chat_response(message_input):
             model="gpt-3.5-turbo",
             messages=messages
         )
-        print("Reponse!!!!!!>>>",response)
-        message_text = response["choices"][0]["message"]["content"]
 
+        message_text = response["choices"][0]["message"]["content"]
         return message_text
     except Exception as e:
-        print("openai exception bottom",e)
+        return 
