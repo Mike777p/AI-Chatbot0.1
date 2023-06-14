@@ -25,6 +25,7 @@ dist-ssr
 
 # Ignore sensitive files
 .env
+READMECourse.md
 
 # Ignore build artifacts
 /build
